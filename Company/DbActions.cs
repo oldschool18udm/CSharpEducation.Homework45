@@ -166,10 +166,8 @@ public class DbActions
                     return null;
                 }
             }
-
             connection.Close();
         }
-
         return user;
     }
 }

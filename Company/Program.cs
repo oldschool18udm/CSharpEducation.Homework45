@@ -4,7 +4,6 @@ class Program
 {
     public static DbActions dbActions = new DbActions();
     public static string fileDB = "userdata.db";
-
     static void Main(string[] args)
     {
         dbActions.CreateDatabase(fileDB);
@@ -152,7 +151,7 @@ class Program
         catch (Exception e)
         {
             Console.WriteLine("Error. Something went wrong");
-            //throw;
+           
         }
     }
 }
