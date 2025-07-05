@@ -7,23 +7,58 @@ class Program
 
     static void Main(string[] args)
     {
-        Console.WriteLine("Hello, World!");
         dbActions.CreateDatabase(fileDB);
-        addUserToDb();
-        LoadUsers();
-        Console.Write("Press number of user to update: ");
-        UpdateUser(Console.ReadLine());
-        LoadUsers();
-        Console.Write("Press number of user to delete: ");
-        DeleteUser(Console.ReadLine());
-        Console.WriteLine("******");
+        bool gameover = false;
+        Console.WriteLine("Welcome to the Company");
+        while (!gameover)
+        {
+            Console.WriteLine("Please enter number: ");
+            Console.WriteLine("1 - Add user");
+            Console.WriteLine("2 - Update user");
+            Console.WriteLine("3 - Delete user");
+            Console.WriteLine("0 - Exit");
+            string userInput = Console.ReadLine();
+            switch (userInput)
+            {
+                case "1":
+                {
+                    addUserToDb();
+                    break;
+                }
+                case "2":
+                {
+                    Console.Write("Press number of user to update: ");
+                    UpdateUser(Console.ReadLine());
+                    break;
+                }
+                case "3":
+                {
+                    Console.Write("Press number of user to delete: ");
+                    DeleteUser(Console.ReadLine());
+                    break;
+                }
+                case "0":
+                {
+                    gameover = true;
+                    break;
+                }
+                default:
+                {
+                    Console.WriteLine("Please enter a valid number");
+                    break;
+                }
+            }
+
+            LoadUsers();
+        }
+        Console.WriteLine("HASTA LA VISTA");
     }
 
     public static void LoadUsers()
     {
         foreach (User user in dbActions.GetUsers(fileDB))
         {
-            Console.WriteLine($"{user.Id} {user.Name} {user.Hours} {user.Salary}");
+            Console.WriteLine($"{user.Id} {user.Name} {user.Hours} {user.Rate} {user.Salary}");
         }
     }
 
@@ -94,11 +129,7 @@ class Program
         }
         catch (Exception e)
         {
-            Console.WriteLine(e);
-            throw;
-        }
-
-        {
+            Console.WriteLine("Uncorrect UserId");
         }
     }
 
