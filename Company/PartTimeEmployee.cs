@@ -1,19 +1,22 @@
-﻿namespace Company_v_2._0;
+﻿using Company;
 
-public class PartTimeEmployee:Employee
+namespace Company;
+
+public class PartTimeEmployee : Employee
 {
     public override string Name { get; set; }
-    public override decimal BaseSalary { get; set; }
+    private decimal salary = -1;
+    public override decimal BaseSalary
+    {
+        get { return salary; }
+        set { value = salary; }
+    }
+
     public decimal Rate { get; set; }
     public decimal HoursWorked { get; set; }
 
     public override decimal CalculateSalary()
     {
         return Rate * HoursWorked;
-    }
-
-    public PartTimeEmployee()
-    {
-        this.BaseSalary = -1;
     }
 }

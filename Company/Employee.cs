@@ -1,4 +1,4 @@
-﻿namespace Company_v_2._0;
+﻿namespace Company;
 
 public abstract class Employee
 {

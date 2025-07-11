@@ -2,156 +2,228 @@
 
 class Program
 {
-    public static DbActions dbActions = new DbActions();
-    public static string fileDB = "userdata.db";
+    public static EmployeeManager<Employee> employeeManager = new EmployeeManager<Employee>();
+
     static void Main(string[] args)
     {
-        dbActions.CreateDatabase(fileDB);
         bool gameover = false;
+        FillList();
         Console.WriteLine("Welcome to the Company");
         while (!gameover)
         {
             Console.WriteLine("Please enter number: ");
-            Console.WriteLine("1 - Add user");
-            Console.WriteLine("2 - Update user");
-            Console.WriteLine("3 - Delete user");
+            Console.WriteLine("1 - Add  Fulltime employee");
+            Console.WriteLine("2 - Add  Parttime employee");
+            Console.WriteLine("3 - Update employee");
+            Console.WriteLine("4 - Delete employee");
+            Console.WriteLine("5 - Show one employee");
+            Console.WriteLine("6 - Show employees");
             Console.WriteLine("0 - Exit");
             string userInput = Console.ReadLine();
             switch (userInput)
             {
                 case "1":
-                {
-                    addUserToDb();
+                    addFullTimeUser();
                     break;
-                }
                 case "2":
-                {
-                    Console.Write("Press number of user to update: ");
+                    addPartTimeUser();
+                    break;
+                case "3":
+                    Console.Write("Press name of user to update: ");
                     UpdateUser(Console.ReadLine());
                     break;
-                }
-                case "3":
-                {
-                    Console.Write("Press number of user to delete: ");
+                case "4":
+                    Console.Write("Press name of user to delete: ");
                     DeleteUser(Console.ReadLine());
                     break;
-                }
+                case "5":
+                    Console.Write("Press name of user to show: ");
+                    GetEployee(Console.ReadLine());
+                    break;
+                case "6":
+                    LoadUsers();
+                    break;
                 case "0":
-                {
                     gameover = true;
                     break;
-                }
                 default:
-                {
                     Console.WriteLine("Please enter a valid number");
                     break;
-                }
             }
-
-            LoadUsers();
         }
         Console.WriteLine("HASTA LA VISTA");
     }
 
+    public static void FillList()
+    {
+        for (int i = 0; i < 3; i++)
+        {
+            FullTimeEmployee employee = new FullTimeEmployee();
+            employee.Name = "John" + i.ToString();
+            employee.BaseSalary = 100 + i;
+            employeeManager.Add(employee);
+        }
+        for (int i = 0; i < 3; i++)
+        {
+            PartTimeEmployee employee = new PartTimeEmployee();
+            employee.Name = "Jane" + i.ToString();
+            employee.Rate = 10 + i;
+            employee.HoursWorked = 5 + i;
+            employeeManager.Add(employee);
+        }
+    }
+
+    public static void GetEployee(string name)
+    {
+        Employee employee = employeeManager.GetEmployee(name);
+        if (employee != null)
+            Console.WriteLine(employeeManager.Show(employee));
+        else
+        {
+            Console.WriteLine("Employee not found.");
+        }
+    }
+
     public static void LoadUsers()
     {
-        foreach (User user in dbActions.GetUsers(fileDB))
+        foreach (Employee employee in employeeManager.Employees)
         {
-            Console.WriteLine($"{user.Id} {user.Name} {user.Hours} {user.Rate} {user.Salary}");
+            Console.WriteLine(employeeManager.Show(employee));
         }
     }
 
-    public static void addUserToDb()
+    public static void addFullTimeUser()
     {
         try
         {
-            User user = new User();
-            Console.WriteLine("Adding new user");
-            Console.Write("Name: ");
-            user.Name = Console.ReadLine();
-            Console.Write("Rate: ");
-            user.Rate = int.Parse(Console.ReadLine());
-            Console.Write("Hours: ");
-            user.Hours = int.Parse(Console.ReadLine());
-            user.Salary = user.Hours * user.Rate;
-            dbActions.AddUserToFile(fileDB, user);
-            Console.WriteLine("User added");
-        }
-        catch (Exception e)
-        {
-            Console.WriteLine("Error. User was not added");
-        }
-    }
-
-    public static void FindUser(string id)
-    {
-        try
-        {
-            int userId = int.Parse(id);
-            var a = dbActions.SearchUser(fileDB, userId);
-            if (a != null)
+            FullTimeEmployee fullTimeEmployee = new FullTimeEmployee();
+            Console.Write("Enter name: ");
+            string name = Console.ReadLine();
+            if (name == String.Empty)
             {
-                Console.WriteLine(a.Name + a.Hours.ToString() + a.Salary.ToString());
+                Console.WriteLine("Uncorrect name");
+                return;
+            }
+
+            fullTimeEmployee.Name = name;
+            Console.Write("Enter full time salary: ");
+            fullTimeEmployee.BaseSalary = decimal.Parse(Console.ReadLine());
+            Employee e = employeeManager.Employees.FirstOrDefault(e => e.Name == fullTimeEmployee.Name);
+            if (e == null)
+            {
+                employeeManager.Add(fullTimeEmployee);
             }
             else
             {
-                Console.WriteLine("No user found");
+                Console.WriteLine("Employee already exists! Try another one.");
             }
         }
-        catch (Exception e)
+        catch (Exception exception)
         {
-            Console.WriteLine("Error. Uncorrect UserId");
-        }
-    }
-
-    public static void UpdateUser(string id)
-    {
-        try
-        {
-            int userId = int.Parse(id);
-            User user = dbActions.SearchUser(fileDB, userId);
-            if (user != null)
-            {
-                Console.Write("Updating user name:");
-                user.Name = Console.ReadLine();
-                Console.Write("Updating rate value:");
-                user.Rate = int.Parse(Console.ReadLine());
-                Console.Write("Updating hours:");
-                user.Hours = int.Parse(Console.ReadLine());
-                user.Salary = user.Hours * user.Rate;
-                dbActions.UpdateStatus(fileDB, userId, user.Name, user.Rate, user.Hours);
-            }
-            else
-            {
-                Console.WriteLine("No user found");
-            }
-        }
-        catch (Exception e)
-        {
-            Console.WriteLine("Uncorrect UserId");
+            Console.WriteLine("Error. Can`t add this Employee. Please try again!");
         }
     }
 
-    public static void DeleteUser(string id)
+    public static void addPartTimeUser()
     {
         try
         {
-            int userId = int.Parse(id);
-            User user = dbActions.SearchUser(fileDB, userId);
-            if (user != null)
+            PartTimeEmployee partTimeEmployee = new PartTimeEmployee();
+            Console.Write("Enter name: ");
+            string name = Console.ReadLine();
+            if (name == String.Empty)
             {
-                dbActions.DeleteUserFromDB(fileDB, userId);
-                Console.WriteLine("User deleted");
+                Console.WriteLine("Uncorrect name");
+                return;
+            }
+            partTimeEmployee.Name = name;
+            Console.Write("Enter rate: ");
+            partTimeEmployee.Rate = decimal.Parse(Console.ReadLine());
+            Console.Write("Enter worked hours: ");
+            partTimeEmployee.HoursWorked = decimal.Parse(Console.ReadLine());
+            Employee e = employeeManager.Employees.FirstOrDefault(e => e.Name == partTimeEmployee.Name);
+            if (e == null)
+            {
+                employeeManager.Add(partTimeEmployee);
             }
             else
             {
-                Console.WriteLine("No user found");
+                Console.WriteLine("Employee already exists! Try another one.");
             }
         }
-        catch (Exception e)
+        catch (Exception exception)
         {
-            Console.WriteLine("Error. Something went wrong");
-           
+            Console.WriteLine("Error. Can`t add this Employee. Please try again!");
+        }
+    }
+
+    public static void UpdateUser(string name)
+    {
+        Employee employee = employeeManager.Employees.FirstOrDefault(e => e.Name == name);
+        if (employee != null)
+        {
+            Console.Write("Input new name: ");
+            string newname = Console.ReadLine();
+            if (newname == String.Empty)
+            {
+                Console.WriteLine("Uncorrect name");
+                return;
+            }
+
+            if (employeeManager.Employees.FirstOrDefault(e => e.Name == newname) != null)
+            {
+                Console.WriteLine("Name already exists");
+                return;
+            }
+
+            if (employee.GetType() == typeof(FullTimeEmployee))
+            {
+                try
+                {
+                    Console.Write("Enter full time salary: ");
+                    decimal newSalary = decimal.Parse(Console.ReadLine());
+                    employeeManager.Update((FullTimeEmployee)employee, newname, newSalary);
+                    Console.WriteLine("FullTimeEmployee updated!");
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine("Error");
+                }
+            }
+            else
+            {
+                try
+                {
+                    Console.Write("Enter  new rate: ");
+                    decimal rate = decimal.Parse(Console.ReadLine());
+                    Console.Write("Enter worked hours: ");
+                    decimal hours = decimal.Parse(Console.ReadLine());
+                    employeeManager.Update((PartTimeEmployee)employee, newname, rate, hours);
+                    Console.WriteLine("PartTimeEmployee updated!");
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine("Error");
+                }
+            }
+        }
+        else
+        {
+            Console.WriteLine("Employee does not exist!");
+        }
+    }
+
+    public static void DeleteUser(string name)
+    {
+        Employee employee = employeeManager.Employees.FirstOrDefault(e => e.Name == name);
+        if (employee != null)
+        {
+            employeeManager.Delete(employee);
+            Console.WriteLine("Employee deleted!");
+        }
+        else
+        {
+            Console.WriteLine("Employee does not exist!");
         }
     }
 }
